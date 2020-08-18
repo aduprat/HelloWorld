@@ -1,14 +1,29 @@
 pipeline {
-  agent {
-    docker {
-      image 'openjdk:11'
-    }
-  }
+  agent none
 
   stages {
-    stage('Compilation') {
-      steps {
-        sh 'java HelloWorld.java'
+    stage('Build with several versions') {
+      matrix {
+        axes {
+          axis {
+            name 'JDK_VERSION'
+            values '11', '12'
+          }
+        }
+
+        stages {
+          stage('Compilation') {
+            agent {
+              docker {
+              image 'openjdk:${JDK_VERSION}'
+              }
+            }
+
+            steps {
+              sh 'java --version'
+            }
+          }
+        }
       }
     }
   }
